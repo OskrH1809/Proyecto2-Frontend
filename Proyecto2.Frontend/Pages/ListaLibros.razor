@@ -27,6 +27,9 @@
                 <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarLibro(context)">
                     Eliminar
                 </MudButton>
+                <MudButton Color="Color.Primary" Size="Size.Small" Href="@($"/libros/editar/{context.Id}")">
+                    Editar
+                </MudButton>
             </MudTd>
         </RowTemplate>
     </MudTable>

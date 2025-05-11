@@ -36,4 +36,16 @@ public class LibroService : ILibroService
         return response.IsSuccessStatusCode;
     }
 
+    public async Task<LibroDto?> ObtenerPorIdAsync(int id)
+    {
+        return await _http.GetFromJsonAsync<LibroDto>($"api/libros/{id}");
+    }
+
+    public async Task<bool> ActualizarAsync(int id, LibroDto libro)
+    {
+        var response = await _http.PutAsJsonAsync($"api/libros/{id}", libro);
+        return response.IsSuccessStatusCode;
+    }
+
+
 }

@@ -8,5 +8,8 @@ public interface ILibroService
     Task<bool> CrearAsync(LibroDto libro);
     Task<List<LibroDto>> ObtenerTodosAsync();
     Task<bool> EliminarAsync(int id);
+    Task<LibroDto?> ObtenerPorIdAsync(int id);
+    Task<bool> ActualizarAsync(int id, LibroDto libro);
+
 
 }

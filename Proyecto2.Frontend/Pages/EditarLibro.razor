@@ -1,0 +1,53 @@
+﻿@page "/libros/editar/{id:int}"
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using MudBlazor
+@inject ILibroService LibroService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width:600px">
+    <MudText Typo="Typo.h5">Editar Libro</MudText>
+
+    @if (_libro is not null)
+    {
+        <MudForm @ref="_form">
+            <MudTextField @bind-Value="_libro.Titulo" Label="Título" Required="true" />
+            <MudTextField @bind-Value="_libro.Anio" Label="Año" Required="true" />
+            <MudTextField @bind-Value="_libro.Genero" Label="Género" />
+            <MudTextField @bind-Value="_libro.NumPaginas" Label="Número de páginas" Type="number" />
+            <MudTextField @bind-Value="_libro.Autor" Label="Autor" Required="true" />
+
+            <MudButton OnClick="ActualizarLibro" Color="Color.Primary" Variant="Variant.Filled" Class="mt-4">
+                Guardar Cambios
+            </MudButton>
+        </MudForm>
+    }
+    else
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private LibroDto? _libro;
+    private MudForm _form;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _libro = await LibroService.ObtenerPorIdAsync(id);
+    }
+
+    private async Task ActualizarLibro()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var ok = await LibroService.ActualizarAsync(id, _libro!);
+            Snackbar.Add(ok ? "Libro actualizado correctamente" : "Error al actualizar",
+                         ok ? Severity.Success : Severity.Error);
+        }
+    }
+}

@@ -29,4 +29,16 @@ public class AutorService : IAutorService
         var response = await _http.DeleteAsync($"api/autores/{id}");
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<AutorDto?> ObtenerPorIdAsync(int id)
+    {
+        return await _http.GetFromJsonAsync<AutorDto>($"api/autores/{id}");
+    }
+
+    public async Task<bool> ActualizarAsync(int id, AutorDto autor)
+    {
+        var response = await _http.PutAsJsonAsync($"api/autores/{id}", autor);
+        return response.IsSuccessStatusCode;
+    }
+
 }
