@@ -1,0 +1,52 @@
+﻿@using MudBlazor
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width: 600px;">
+    <MudText Typo="Typo.h5" GutterBottom="true">Registrar Autor</MudText>
+
+    <MudForm @ref="_form" Model="_autor">
+        <MudTextField @bind-Value="_autor.NombreCompleto" Label="Nombre completo" Required="true" />
+        <MudDatePicker @bind-Date="_autor.FechaNacimiento" Label="Fecha de nacimiento" Required="true" />
+        <MudTextField @bind-Value="_autor.Ciudad" Label="Ciudad de procedencia" />
+        <MudTextField @bind-Value="_autor.Correo" Label="Correo electrónico" />
+
+        <MudButton OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+            Guardar Autor
+        </MudButton>
+    </MudForm>
+</MudPaper>
+
+@code {
+    private MudForm _form;
+    private AutorDto _autor = new();
+
+    private async Task SubmitForm()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var response = await Http.PostAsJsonAsync("api/autores", _autor);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Snackbar.Add("Autor registrado exitosamente", Severity.Success);
+                _autor = new(); // limpia el formulario
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Snackbar.Add($"Error al registrar autor: {error}", Severity.Error);
+            }
+        }
+    }
+
+    public class AutorDto
+    {
+        public string NombreCompleto { get; set; } = "";
+        public DateTime? FechaNacimiento { get; set; }
+        public string Ciudad { get; set; } = "";
+        public string Correo { get; set; } = "";
+    }
+}

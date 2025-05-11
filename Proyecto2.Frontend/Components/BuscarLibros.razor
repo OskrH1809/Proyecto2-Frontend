@@ -1,0 +1,53 @@
+﻿@page "/libros/buscar"
+@using MudBlazor
+@inject HttpClient Http
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Buscar Libros</MudText>
+
+    <MudTextField @bind-Value="query" Placeholder="Buscar por título, autor o año..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" Class="mb-4" Immediate="true" OnBlur="BuscarLibrosPorTexto" />
+
+    <MudTable Items="libros" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Título</MudTh>
+            <MudTh>Año</MudTh>
+            <MudTh>Autor</MudTh>
+            <MudTh>Género</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Título">@context.Titulo</MudTd>
+            <MudTd DataLabel="Año">@context.Anio</MudTd>
+            <MudTd DataLabel="Autor">@context.Autor</MudTd>
+            <MudTd DataLabel="Género">@context.Genero</MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private string query = "";
+    private List<LibroDto> libros = new();
+
+    private async Task BuscarLibrosPorTexto()
+
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            libros.Clear();
+            return;
+        }
+
+        var response = await Http.GetFromJsonAsync<List<LibroDto>>($"api/libros/search?query={query}");
+        if (response is not null)
+        {
+            libros = response;
+        }
+    }
+
+    public class LibroDto
+    {
+        public string Titulo { get; set; } = "";
+        public string Anio { get; set; } = "";
+        public string Genero { get; set; } = "";
+        public string Autor { get; set; } = "";
+    }
+}
