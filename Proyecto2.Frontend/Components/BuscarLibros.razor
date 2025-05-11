@@ -1,6 +1,10 @@
 ﻿@page "/libros/buscar"
 @using MudBlazor
-@inject HttpClient Http
+@using Proyecto2.Frontend.Services
+@using Proyecto2.Frontend.Models
+
+@inject ILibroService LibroService
+
 
 <MudPaper Class="p-4">
     <MudText Typo="Typo.h5" GutterBottom="true">Buscar Libros</MudText>
@@ -36,18 +40,12 @@
             return;
         }
 
-        var response = await Http.GetFromJsonAsync<List<LibroDto>>($"api/libros/search?query={query}");
+        var response = await LibroService.BuscarAsync(query);
         if (response is not null)
         {
             libros = response;
         }
     }
 
-    public class LibroDto
-    {
-        public string Titulo { get; set; } = "";
-        public string Anio { get; set; } = "";
-        public string Genero { get; set; } = "";
-        public string Autor { get; set; } = "";
-    }
+    
 }

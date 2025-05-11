@@ -1,0 +1,57 @@
+﻿@page "/libros"
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using MudBlazor
+@inject ILibroService LibroService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Libros Registrados</MudText>
+
+    <MudTable Items="libros" Hover="true" Dense="true" Bordered="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>Título</MudTh>
+            <MudTh>Año</MudTh>
+            <MudTh>Autor</MudTh>
+            <MudTh>Género</MudTh>
+            <MudTh>Páginas</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Titulo</MudTd>
+            <MudTd>@context.Anio</MudTd>
+            <MudTd>@context.Autor</MudTd>
+            <MudTd>@context.Genero</MudTd>
+            <MudTd>@context.NumPaginas</MudTd>
+            <MudTd>
+                <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarLibro(context)">
+                    Eliminar
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<LibroDto> libros = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        libros = await LibroService.ObtenerTodosAsync();
+    }
+
+    private async Task EliminarLibro(LibroDto libro)
+    {
+        var eliminado = await LibroService.EliminarAsync(libro.Id);
+
+        if (eliminado)
+        {
+            Snackbar.Add("Libro eliminado", Severity.Success);
+            libros = await LibroService.ObtenerTodosAsync();
+        }
+        else
+        {
+            Snackbar.Add("Error al eliminar libro", Severity.Error);
+        }
+    }
+}

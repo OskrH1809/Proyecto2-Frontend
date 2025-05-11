@@ -1,17 +1,19 @@
 ﻿@using MudBlazor
-@inject HttpClient Http
+@inject ILibroService LibroService
+@using Proyecto2.Frontend.Services
+
 @inject ISnackbar Snackbar
 @using Proyecto2.Frontend.Models
 
 <MudPaper>
     <MudForm @ref="_form" Model="_libro">
-        
+
         <MudButton OnClick="SubmitForm">Guardar</MudButton>
     </MudForm>
 </MudPaper>
 
 @code {
-    
+
     private MudForm _form;
     private LibroDto _libro = new();
 
@@ -21,18 +23,18 @@
 
         if (_form.IsValid)
         {
-            var response = await Http.PostAsJsonAsync("api/libros", _libro);
+            var creado = await LibroService.CrearAsync(_libro);
 
-            if (response.IsSuccessStatusCode)
+            if (creado)
             {
                 Snackbar.Add("Libro registrado exitosamente", Severity.Success);
-                _libro = new();
+                _libro = new(); 
             }
             else
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Error al registrar libro: {error}", Severity.Error);
+                Snackbar.Add("Error al registrar libro", Severity.Error);
             }
+
         }
     }
 

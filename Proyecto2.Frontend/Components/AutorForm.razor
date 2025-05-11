@@ -1,6 +1,8 @@
 ﻿@using MudBlazor
-@inject HttpClient Http
+@inject IAutorService AutorService
 @inject ISnackbar Snackbar
+@using Proyecto2.Frontend.Services
+
 @using Proyecto2.Frontend.Models
 
 <MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width: 600px;">
@@ -28,18 +30,18 @@
 
         if (_form.IsValid)
         {
-            var response = await Http.PostAsJsonAsync("api/autores", _autor);
+            var creado = await AutorService.CrearAsync(_autor);
 
-            if (response.IsSuccessStatusCode)
+            if (creado)
             {
                 Snackbar.Add("Autor registrado exitosamente", Severity.Success);
-                _autor = new(); // limpia el formulario
+                _autor = new();
             }
             else
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Error al registrar autor: {error}", Severity.Error);
+                Snackbar.Add("Error al registrar autor", Severity.Error);
             }
+
         }
     }
 

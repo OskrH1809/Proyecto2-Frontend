@@ -1,0 +1,55 @@
+﻿@page "/autores"
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using MudBlazor
+@inject IAutorService AutorService
+@inject ISnackbar Snackbar
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h5">Autores Registrados</MudText>
+
+    <MudTable Items="autores" Hover="true" Dense="true" Bordered="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>Nombre</MudTh>
+            <MudTh>Fecha Nacimiento</MudTh>
+            <MudTh>Ciudad</MudTh>
+            <MudTh>Correo</MudTh>
+            <MudTh></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.NombreCompleto</MudTd>
+            <MudTd>@context.FechaNacimiento?.ToShortDateString()</MudTd>
+            <MudTd>@context.Ciudad</MudTd>
+            <MudTd>@context.Correo</MudTd>
+            <MudTd>
+                <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarAutor(context)">
+                    Eliminar
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudPaper>
+
+@code {
+    private List<AutorDto> autores = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        autores = await AutorService.ObtenerTodosAsync();
+    }
+
+    private async Task EliminarAutor(AutorDto autor)
+    {
+        var confirmado = await AutorService.EliminarAsync(autor.Id);
+
+        if (confirmado)
+        {
+            Snackbar.Add("Autor eliminado", Severity.Success);
+            autores = await AutorService.ObtenerTodosAsync();
+        }
+        else
+        {
+            Snackbar.Add("Error al eliminar autor", Severity.Error);
+        }
+    }
+}
