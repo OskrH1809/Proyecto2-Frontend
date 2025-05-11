@@ -1,6 +1,7 @@
 ﻿@using MudBlazor
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@using Proyecto2.Frontend.Models
 
 <MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width: 600px;">
     <MudText Typo="Typo.h5" GutterBottom="true">Registrar Autor</MudText>
@@ -42,11 +43,5 @@
         }
     }
 
-    public class AutorDto
-    {
-        public string NombreCompleto { get; set; } = "";
-        public DateTime? FechaNacimiento { get; set; }
-        public string Ciudad { get; set; } = "";
-        public string Correo { get; set; } = "";
-    }
+   
 }
