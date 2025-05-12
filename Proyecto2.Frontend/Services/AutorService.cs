@@ -37,8 +37,20 @@ public class AutorService : IAutorService
 
     public async Task<bool> ActualizarAsync(int id, AutorDto autor)
     {
-        var response = await _http.PutAsJsonAsync($"api/autores/{id}", autor);
+        var wrapper = new AutorWrapperDto
+        {
+            Id = id,
+            Autor = autor  // Ya no uses AutorSinIdDto
+        };
+
+        var response = await _http.PutAsJsonAsync($"api/autores/{id}", wrapper);
         return response.IsSuccessStatusCode;
     }
+
+
+
+
+
+
 
 }

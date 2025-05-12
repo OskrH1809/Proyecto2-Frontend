@@ -14,13 +14,22 @@ public class LibroService : ILibroService
 
     public async Task<List<LibroDto>> BuscarAsync(string query)
     {
-        var response = await _http.GetFromJsonAsync<List<LibroDto>>($"api/libros/search?query={query}");
-        return response ?? new List<LibroDto>();
+        var response = await _http.GetFromJsonAsync<List<LibroWrapperDto>>($"api/libros/search?query={query}");
+        return response?.Select(r => r.Libro).ToList() ?? new List<LibroDto>();
     }
+
 
     public async Task<bool> CrearAsync(LibroDto libro)
     {
-        var response = await _http.PostAsJsonAsync("api/libros", libro);
+        var wrapper = new LibroWrapperDto { Id = libro.Id, Libro = libro };
+        var response = await _http.PostAsJsonAsync("api/libros", wrapper);
+        return response.IsSuccessStatusCode;
+    }
+
+    public async Task<bool> ActualizarAsync(int id, LibroDto libro)
+    {
+        var wrapper = new LibroWrapperDto { Id = id, Libro = libro };
+        var response = await _http.PutAsJsonAsync($"api/libros/{id}", wrapper);
         return response.IsSuccessStatusCode;
     }
 
@@ -41,11 +50,7 @@ public class LibroService : ILibroService
         return await _http.GetFromJsonAsync<LibroDto>($"api/libros/{id}");
     }
 
-    public async Task<bool> ActualizarAsync(int id, LibroDto libro)
-    {
-        var response = await _http.PutAsJsonAsync($"api/libros/{id}", libro);
-        return response.IsSuccessStatusCode;
-    }
+   
 
 
 }

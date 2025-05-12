@@ -1,43 +1,41 @@
-﻿@using MudBlazor
-@inject ILibroService LibroService
+﻿@using Proyecto2.Frontend.Models
 @using Proyecto2.Frontend.Services
-
+@inject ILibroService LibroService
 @inject ISnackbar Snackbar
-@using Proyecto2.Frontend.Models
 
-<MudPaper>
-    <MudForm @ref="_form" Model="_libro">
+<MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width: 600px;">
+    <MudText Typo="Typo.h5">Registrar Libro</MudText>
 
-        <MudButton OnClick="SubmitForm">Guardar</MudButton>
+    <MudForm @ref="_form">
+        <MudTextField @bind-Value="_libro.Titulo" Label="Título" Required="true" />
+        <MudNumericField T="int" @bind-Value="_libro.Anio" Label="Año" Required="true" />
+        <MudTextField @bind-Value="_libro.Genero" Label="Género" />
+        <MudNumericField T="int?" @bind-Value="_libro.NumeroPaginas" Label="Número de páginas" />
+        <MudNumericField T="int" @bind-Value="_libro.AutorId" Label="ID del Autor" Required="true" />
+
+        <MudButton OnClick="Registrar" Color="Color.Primary" Class="mt-4">
+            Guardar Libro
+        </MudButton>
     </MudForm>
 </MudPaper>
 
 @code {
-
-    private MudForm _form;
     private LibroDto _libro = new();
+    private MudForm _form;
 
-    private async Task SubmitForm()
+    private async Task Registrar()
     {
         await _form.Validate();
 
         if (_form.IsValid)
         {
-            var creado = await LibroService.CrearAsync(_libro);
-
-            if (creado)
-            {
-                Snackbar.Add("Libro registrado exitosamente", Severity.Success);
-                _libro = new(); 
-            }
+            var resultado = await LibroService.CrearAsync(_libro);
+            if (resultado)
+                Snackbar.Add("Libro registrado correctamente", Severity.Success);
             else
-            {
                 Snackbar.Add("Error al registrar libro", Severity.Error);
-            }
 
+            _libro = new(); // reset
         }
     }
-
-    
-    
 }

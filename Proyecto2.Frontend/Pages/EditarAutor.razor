@@ -13,9 +13,14 @@
     {
         <MudForm @ref="_form">
             <MudTextField @bind-Value="_autor.NombreCompleto" Label="Nombre completo" Required="true" />
-            <MudDatePicker @bind-Date="_autor.FechaNacimiento" Label="Fecha de nacimiento" Required="true" />
-            <MudTextField @bind-Value="_autor.Ciudad" Label="Ciudad de procedencia" />
-            <MudTextField @bind-Value="_autor.Correo" Label="Correo electrónico" />
+
+            <MudTextField Label="Fecha de nacimiento"
+                          @bind-Value="FechaNacimientoString"
+                          InputType="InputType.Date"
+                          Required="true" />
+
+            <MudTextField @bind-Value="_autor.CiudadProcedencia" Label="Ciudad de procedencia" />
+            <MudTextField @bind-Value="_autor.CorreoElectronico" Label="Correo electrónico" />
 
             <MudButton OnClick="ActualizarAutor" Class="mt-4" Color="Color.Primary" Variant="Variant.Filled">
                 Guardar Cambios
@@ -33,6 +38,16 @@
 
     private AutorDto? _autor;
     private MudForm _form;
+
+    private string FechaNacimientoString
+    {
+        get => _autor?.FechaNacimiento?.ToString("yyyy-MM-dd") ?? "";
+        set
+        {
+            if (_autor is not null && DateTime.TryParse(value, out var parsedDate))
+                _autor.FechaNacimiento = parsedDate;
+        }
+    }
 
     protected override async Task OnAuthenticatedInitializedAsync()
     {

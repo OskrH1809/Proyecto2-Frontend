@@ -21,8 +21,8 @@
         <RowTemplate>
             <MudTd>@context.NombreCompleto</MudTd>
             <MudTd>@context.FechaNacimiento?.ToShortDateString()</MudTd>
-            <MudTd>@context.Ciudad</MudTd>
-            <MudTd>@context.Correo</MudTd>
+            <MudTd>@context.CiudadProcedencia</MudTd>
+            <MudTd>@context.CorreoElectronico</MudTd>
             <MudTd>
                 <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarAutor(context)">
                     Eliminar

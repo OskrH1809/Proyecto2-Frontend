@@ -1,8 +1,5 @@
-﻿namespace Proyecto2.Frontend.Models;
-
-public class AutorDto
+﻿public class AutorSinIdDto
 {
-    public int Id { get; set; }
     public string NombreCompleto { get; set; } = "";
     public DateTime? FechaNacimiento { get; set; }
     public string CiudadProcedencia { get; set; } = "";
