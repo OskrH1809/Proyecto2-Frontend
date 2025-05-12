@@ -10,7 +10,7 @@
 
     <MudForm @ref="_form" Model="_autor">
         <MudTextField @bind-Value="_autor.NombreCompleto" Label="Nombre completo" Required="true" />
-        <MudDatePicker @bind-Date="_autor.FechaNacimiento" Label="Fecha de nacimiento" Required="true" />
+        <MudDatePicker @bind-Value="_autor.FechaNacimiento" Label="Fecha de nacimiento" Required="true" />
         <MudTextField @bind-Value="_autor.Ciudad" Label="Ciudad de procedencia" />
         <MudTextField @bind-Value="_autor.Correo" Label="Correo electrónico" />
 

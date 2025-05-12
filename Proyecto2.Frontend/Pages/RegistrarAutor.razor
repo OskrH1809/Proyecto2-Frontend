@@ -1,4 +1,17 @@
 ﻿@page "/autores/registrar"
 @using Proyecto2.Frontend.Components
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 
 <AutorForm />
+
+@code {
+    protected override async Task OnAuthenticatedInitializedAsync()
+    {
+        // No necesitas hacer nada aquí porque el <AutorForm /> ya se encarga del formulario
+    }
+}
+
+
+
+

@@ -1,7 +1,8 @@
 ﻿@page "/libros/editar/{id:int}"
 @using Proyecto2.Frontend.Models
 @using Proyecto2.Frontend.Services
-@using MudBlazor
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 @inject ILibroService LibroService
 @inject ISnackbar Snackbar
 
@@ -34,7 +35,7 @@
     private LibroDto? _libro;
     private MudForm _form;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAuthenticatedInitializedAsync()
     {
         _libro = await LibroService.ObtenerPorIdAsync(id);
     }

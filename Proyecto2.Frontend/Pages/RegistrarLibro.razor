@@ -1,4 +1,13 @@
 ﻿@page "/libros/registrar"
 @using Proyecto2.Frontend.Components
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 
 <LibroForm />
+
+@code {
+    protected override async Task OnAuthenticatedInitializedAsync()
+    {
+        // No se necesita lógica aquí, el componente LibroForm se encarga
+    }
+}

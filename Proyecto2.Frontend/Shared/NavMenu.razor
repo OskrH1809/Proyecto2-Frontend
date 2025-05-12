@@ -1,23 +1,42 @@
 ﻿@using MudBlazor
+@inject ISessionService SessionService
 
-<MudNavLink Href="/libros/registrar" Icon="@Icons.Material.Filled.Book">
-    Registrar Libro
-</MudNavLink>
+<nav class="h-screen w-64 bg-gray-900 text-white flex flex-col shadow-lg fixed">
+    <div class="p-4 text-2xl font-bold tracking-wide border-b border-gray-700">
+        📚 Proyecto2
+    </div>
+    <MudButton OnClick="SessionService.LogoutAsync" Color="Color.Error" Variant="Variant.Text">
+        🔒 Cerrar sesión
+    </MudButton>
+    <ul class="flex-1 overflow-y-auto">
+        <li>
+            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/">
+                🏠 Inicio
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/autores">
+                👤 Lista de Autores
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/autores/registrar">
+                ➕ Registrar Autor
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/libros">
+                📖 Lista de Libros
+            </NavLink>
+        </li>
+        <li>
+            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/libros/registrar">
+                ➕ Registrar Libro
+            </NavLink>
+        </li>
+    </ul>
 
-<MudNavLink Href="/autores/registrar" Icon="@Icons.Material.Filled.Person">
-    Registrar Autor
-</MudNavLink>
-
-
-<MudNavLink Href="/libros/buscar" Icon="@Icons.Material.Filled.Search">
-    Buscar Libros
-</MudNavLink>
-
-
-<MudNavLink Href="/autores" Icon="@Icons.Material.Filled.People">
-    Ver Autores
-</MudNavLink>
-
-<MudNavLink Href="/libros" Icon="@Icons.Material.Filled.LibraryBooks">
-    Ver Libros
-</MudNavLink>
+    <footer class="p-4 border-t border-gray-700 text-sm text-center opacity-50">
+        © 2025 Oscar Canales
+    </footer>
+</nav>

@@ -1,7 +1,8 @@
 ﻿@page "/autores/editar/{id:int}"
 @using Proyecto2.Frontend.Models
 @using Proyecto2.Frontend.Services
-@using MudBlazor
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 @inject IAutorService AutorService
 @inject ISnackbar Snackbar
 
@@ -33,7 +34,7 @@
     private AutorDto? _autor;
     private MudForm _form;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAuthenticatedInitializedAsync()
     {
         _autor = await AutorService.ObtenerPorIdAsync(id);
     }

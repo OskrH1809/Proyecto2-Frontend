@@ -1,7 +1,8 @@
 ﻿@page "/libros"
 @using Proyecto2.Frontend.Models
 @using Proyecto2.Frontend.Services
-@using MudBlazor
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 @inject ILibroService LibroService
 @inject ISnackbar Snackbar
 
@@ -38,7 +39,7 @@
 @code {
     private List<LibroDto> libros = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAuthenticatedInitializedAsync()
     {
         libros = await LibroService.ObtenerTodosAsync();
     }

@@ -1,0 +1,62 @@
+﻿@page "/login"
+@inject IAuthService AuthService
+@inject NavigationManager NavManager
+@inject ISnackbar Snackbar
+@inject IJSRuntime JS
+@using Proyecto2.Frontend.Models
+@using MudBlazor
+@using System.Text.Json
+
+<MudPaper Class="p-6 max-w-md mx-auto mt-10" Elevation="4">
+    <MudText Typo="Typo.h6" Class="mb-4">Iniciar Sesión</MudText>
+
+    <MudForm @ref="_form">
+        <MudTextField Label="Username" @bind-Value="_model.Username" Required="true" />
+        <MudTextField Label="Contraseña" @bind-Value="_model.Password" InputType="InputType.Password" Required="true" />
+
+        <MudButton OnClick="OnLoginAsync" Class="mt-4" Color="Color.Primary">Ingresar</MudButton>
+    </MudForm>
+</MudPaper>
+
+@code {
+    private MudForm _form;
+    private LoginRequest _model = new();
+
+    private async Task OnLoginAsync()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var tokenJson = await AuthService.LoginAsync(_model);
+
+            string rawToken = string.Empty;
+
+            try
+            {
+                // Primer deserializado porque el string viene como JSON en texto
+                var jsonDoc = JsonDocument.Parse(tokenJson);
+                if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProp))
+                {
+                    rawToken = tokenProp.GetString();
+                }
+            }
+            catch
+            {
+                // Si no se puede deserializar, viene plano
+                rawToken = tokenJson;
+            }
+
+            if (!string.IsNullOrWhiteSpace(rawToken))
+            {
+                await JS.InvokeVoidAsync("localStorage.setItem", "authToken", rawToken);
+                Snackbar.Add("Inicio de sesión exitoso", Severity.Success);
+                NavManager.NavigateTo("/");
+            }
+            else
+            {
+                Snackbar.Add("Error al procesar el token", Severity.Error);
+            }
+        }
+    }
+}

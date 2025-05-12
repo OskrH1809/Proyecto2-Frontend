@@ -1,4 +1,6 @@
 ﻿@page "/autores"
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
 @using Proyecto2.Frontend.Models
 @using Proyecto2.Frontend.Services
 @using MudBlazor
@@ -25,11 +27,10 @@
                 <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarAutor(context)">
                     Eliminar
                 </MudButton>
+                <MudButton Color="Color.Primary" Size="Size.Small" Href="@($"/autores/editar/{context.Id}")">
+                    Editar
+                </MudButton>
             </MudTd>
-            <MudButton Color="Color.Primary" Size="Size.Small" Href="@($"/autores/editar/{context.Id}")">
-                Editar
-            </MudButton>
-
         </RowTemplate>
     </MudTable>
 </MudPaper>
@@ -37,7 +38,7 @@
 @code {
     private List<AutorDto> autores = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAuthenticatedInitializedAsync()
     {
         autores = await AutorService.ObtenerTodosAsync();
     }
