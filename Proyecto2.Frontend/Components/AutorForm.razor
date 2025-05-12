@@ -2,23 +2,50 @@
 @inject IAutorService AutorService
 @inject ISnackbar Snackbar
 @using Proyecto2.Frontend.Services
-
 @using Proyecto2.Frontend.Models
 
-<MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width: 600px;">
-    <MudText Typo="Typo.h5" GutterBottom="true">Registrar Autor</MudText>
+<div class="max-w-xl mx-auto mt-10 bg-white rounded-xl shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">🧑‍💼 Registrar Autor</h2>
 
-    <MudForm @ref="_form" Model="_autor">
-        <MudTextField @bind-Value="_autor.NombreCompleto" Label="Nombre completo" Required="true" />
-        <MudTextField @bind-Value="FechaNacimientoString" Label="Fecha de nacimiento" InputType="InputType.Date" Required="true" />
-        <MudTextField @bind-Value="_autor.CiudadProcedencia" Label="Ciudad de procedencia" />
-        <MudTextField @bind-Value="_autor.CorreoElectronico" Label="Correo electrónico" />
+    <MudForm @ref="_form">
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre completo</label>
+                <MudTextField @bind-Value="_autor.NombreCompleto"
+                              Class="w-full border border-blue-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              Required="true" />
+            </div>
 
-        <MudButton OnClick="SubmitForm" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-            Guardar Autor
-        </MudButton>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha de nacimiento</label>
+                <MudTextField @bind-Value="FechaNacimientoString"
+                              InputType="InputType.Date"
+                              Class="w-full border border-green-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                              Required="true" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Ciudad de procedencia</label>
+                <MudTextField @bind-Value="_autor.CiudadProcedencia"
+                              Class="w-full border border-yellow-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+                <MudTextField @bind-Value="_autor.CorreoElectronico"
+                              Class="w-full border border-purple-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <MudButton OnClick="SubmitForm"
+                       Variant="Variant.Filled"
+                       Style="background-color: rgb(17, 24, 39); color: white;"
+                       Size="Size.Medium"
+                       Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+                💾 Guardar Autor
+            </MudButton>
+        </div>
     </MudForm>
-</MudPaper>
+</div>
 
 @code {
     private MudForm _form;
@@ -40,12 +67,12 @@
 
             if (creado)
             {
-                Snackbar.Add("Autor registrado exitosamente", Severity.Success);
+                Snackbar.Add("✅ Autor registrado exitosamente", Severity.Success);
                 _autor = new();
             }
             else
             {
-                Snackbar.Add("Error al registrar autor", Severity.Error);
+                Snackbar.Add("❌ Error al registrar autor", Severity.Error);
             }
         }
     }

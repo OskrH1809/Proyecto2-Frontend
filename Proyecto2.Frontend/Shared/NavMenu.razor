@@ -1,42 +1,41 @@
 ﻿@using MudBlazor
 @inject ISessionService SessionService
+@using Proyecto2.Frontend.Shared
+@using Microsoft.AspNetCore.Components.Rendering
 
-<nav class="h-screen w-64 bg-gray-900 text-white flex flex-col shadow-lg fixed">
-    <div class="p-4 text-2xl font-bold tracking-wide border-b border-gray-700">
-        📚 Proyecto2
-    </div>
-    <MudButton OnClick="SessionService.LogoutAsync" Color="Color.Error" Variant="Variant.Text">
-        🔒 Cerrar sesión
-    </MudButton>
-    <ul class="flex-1 overflow-y-auto">
-        <li>
-            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/">
-                🏠 Inicio
-            </NavLink>
-        </li>
-        <li>
-            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/autores">
-                👤 Lista de Autores
-            </NavLink>
-        </li>
-        <li>
-            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/autores/registrar">
-                ➕ Registrar Autor
-            </NavLink>
-        </li>
-        <li>
-            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/libros">
-                📖 Lista de Libros
-            </NavLink>
-        </li>
-        <li>
-            <NavLink class="block px-4 py-3 hover:bg-gray-700" href="/libros/registrar">
-                ➕ Registrar Libro
-            </NavLink>
-        </li>
-    </ul>
+<NavMenu />
 
-    <footer class="p-4 border-t border-gray-700 text-sm text-center opacity-50">
-        © 2025 Oscar Canales
-    </footer>
-</nav>
+
+@code {
+    private bool _isOpen = false;
+
+    private void ToggleMenu() => _isOpen = !_isOpen;
+
+    private RenderFragment NavLinks() => builder =>
+    {
+        builder.OpenElement(0, "ul");
+
+        RenderNavItem(builder, "/", "🏠 Inicio", 1);
+        RenderNavItem(builder, "/autores", "👤 Lista de Autores", 2);
+        RenderNavItem(builder, "/autores/registrar", "➕ Registrar Autor", 3);
+        RenderNavItem(builder, "/libros", "📖 Lista de Libros", 4);
+        RenderNavItem(builder, "/libros/registrar", "➕ Registrar Libro", 5);
+
+        builder.CloseElement();
+    };
+
+    private void RenderNavItem(RenderTreeBuilder builder, string href, string label, int seq)
+
+    {
+        builder.OpenElement(seq, "li");
+        builder.OpenComponent<NavLink>(seq + 1);
+        builder.AddAttribute(seq + 2, "href", href);
+        builder.AddAttribute(seq + 3, "class", "block px-4 py-2 hover:bg-gray-700");
+        builder.AddAttribute(seq + 4, "ChildContent", (RenderFragment)(childBuilder =>
+        {
+            childBuilder.AddContent(seq + 5, label);
+        }));
+        builder.CloseComponent();
+        builder.CloseElement();
+    }
+}

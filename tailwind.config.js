@@ -2,7 +2,7 @@
 module.exports = {
   content: [
     "./**/*.razor",
-    "./wwwroot/index.html"
+    ".Proyecto2.Frontend/wwwroot/index.html"
   ],
   theme: {
     extend: {},

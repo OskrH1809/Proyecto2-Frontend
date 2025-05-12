@@ -4,30 +4,90 @@
 @using Proyecto2.Frontend.Auth
 @inherits ProtectedComponentBase
 @inject ILibroService LibroService
+@inject IAutorService AutorService
 @inject ISnackbar Snackbar
+@using MudBlazor
 
-<MudPaper Class="p-6 mx-auto mt-4" Elevation="4" Style="max-width:600px">
-    <MudText Typo="Typo.h5">Editar Libro</MudText>
+<div class="max-w-xl mx-auto mt-10 bg-white rounded-xl shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">✏️ Editar Libro</h2>
 
     @if (_libro is not null)
     {
         <MudForm @ref="_form">
-            <MudTextField @bind-Value="_libro.Titulo" Label="Título" Required="true" />
-            <MudTextField @bind-Value="_libro.Anio" Label="Año" Required="true" />
-            <MudTextField @bind-Value="_libro.Genero" Label="Género" />
-            <MudTextField @bind-Value="_libro.NumeroPaginas" Label="Número de páginas" Type="number" />
-            <MudTextField @bind-Value="_libro.AutorId" Label="Autor" Required="true" />
+            <div class="space-y-6">
 
-            <MudButton OnClick="ActualizarLibro" Color="Color.Primary" Variant="Variant.Filled" Class="mt-4">
-                Guardar Cambios
-            </MudButton>
+                <!-- Título -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Título</label>
+                    <MudTextField @bind-Value="_libro.Titulo"
+                                  Class="w-full border border-blue-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  Required="true" />
+                </div>
+
+                <!-- Año -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Año</label>
+                    <MudTextField @bind-Value="_libro.Anio"
+                                  Class="w-full border border-green-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  Required="true" />
+                </div>
+
+                <!-- Género -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Género</label>
+                    <MudTextField @bind-Value="_libro.Genero"
+                                  Class="w-full border border-yellow-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+
+                <!-- Número de páginas -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Número de páginas</label>
+                    <MudTextField @bind-Value="_libro.NumeroPaginas"
+                                  Type="number"
+                                  Class="w-full border border-purple-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                </div>
+
+                <!-- Buscador de autor -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-600 mb-1">Buscar Autor</label>
+                    <input type="text"
+                           @bind="_busquedaAutor"
+                           @bind:event="oninput"
+                           placeholder="Buscar por nombre..."
+                           class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition" />
+                </div>
+
+                <!-- Select de autor -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Autor</label>
+                    <select @bind="_libro.AutorId"
+                            class="w-full border border-indigo-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option disabled value="0">-- Seleccionar autor --</option>
+                        @foreach (var autor in _autoresFiltrados)
+                        {
+                            <option value="@autor.Id">@autor.NombreCompleto</option>
+                        }
+                    </select>
+                </div>
+
+                <!-- Botón -->
+                <MudButton OnClick="ActualizarLibro"
+                           Variant="Variant.Filled"
+                           Style="background-color: rgb(17, 24, 39); color: white;"
+                           Size="Size.Medium"
+                           Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+                    💾 Guardar Cambios
+                </MudButton>
+            </div>
         </MudForm>
     }
     else
     {
-        <MudProgressCircular Indeterminate="true" />
+        <div class="flex justify-center py-10">
+            <MudProgressCircular Indeterminate="true" />
+        </div>
     }
-</MudPaper>
+</div>
 
 @code {
     [Parameter] public int id { get; set; }
@@ -35,9 +95,15 @@
     private LibroDto? _libro;
     private MudForm _form;
 
+    private List<AutorDto> _autores = new();
+    private List<AutorDto> _autoresFiltrados = new();
+    private string _busquedaAutor = "";
+
     protected override async Task OnAuthenticatedInitializedAsync()
     {
         _libro = await LibroService.ObtenerPorIdAsync(id);
+        _autores = await AutorService.ObtenerTodosAsync();
+        _autoresFiltrados = _autores.ToList();
     }
 
     private async Task ActualizarLibro()
@@ -46,9 +112,31 @@
 
         if (_form.IsValid)
         {
-            var ok = await LibroService.ActualizarAsync(id, _libro!);
-            Snackbar.Add(ok ? "Libro actualizado correctamente" : "Error al actualizar",
-                         ok ? Severity.Success : Severity.Error);
+            var actualizado = await LibroService.ActualizarAsync(id, _libro!);
+
+            if (actualizado)
+            {
+                Snackbar.Add("📘 Libro actualizado correctamente", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("❌ Error al actualizar libro", Severity.Error);
+            }
+        }
+    }
+
+    private string BusquedaAutor
+    {
+        get => _busquedaAutor;
+        set
+        {
+            _busquedaAutor = value;
+            _autoresFiltrados = string.IsNullOrWhiteSpace(value)
+                ? _autores
+                : _autores
+                    .Where(a => a.NombreCompleto != null &&
+                                a.NombreCompleto.ToLower().Contains(value.Trim().ToLower()))
+                    .ToList();
         }
     }
 }

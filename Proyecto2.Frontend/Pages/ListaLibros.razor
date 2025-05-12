@@ -6,42 +6,105 @@
 @inject ILibroService LibroService
 @inject ISnackbar Snackbar
 
-<MudPaper Class="p-4">
-    <MudText Typo="Typo.h5">Libros Registrados</MudText>
+<div class="w-full px-4 py-8">
+    <MudPaper Class="w-full p-10 rounded-xl shadow-md bg-white">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <MudText Typo="Typo.h5" Class="text-gray-800 font-bold">📚 Libros Registrados</MudText>
+            <MudButton Href="/libros/registrar"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       Style="background-color: rgb(34, 197, 94); color: white;"
+                       Variant="Variant.Filled"
+                       Class="mt-4 sm:mt-0 transition-transform hover:scale-105 shadow-md">
+                Agregar Libro
+            </MudButton>
+        </div>
 
-    <MudTable Items="libros" Hover="true" Dense="true" Bordered="true" Class="mt-4">
-        <HeaderContent>
-            <MudTh>Título</MudTh>
-            <MudTh>Año</MudTh>
-            <MudTh>Autor</MudTh>
-            <MudTh>Género</MudTh>
-            <MudTh>Páginas</MudTh>
-            <MudTh></MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd>@context.Titulo</MudTd>
-            <MudTd>@context.Anio</MudTd>
-            <MudTd>@context.AutorId</MudTd>
-            <MudTd>@context.Genero</MudTd>
-            <MudTd>@context.NumeroPaginas</MudTd>
-            <MudTd>
-                <MudButton Color="Color.Error" Size="Size.Small" OnClick="() => EliminarLibro(context)">
-                    Eliminar
-                </MudButton>
-                <MudButton Color="Color.Primary" Size="Size.Small" Href="@($"/libros/editar/{context.Id}")">
-                    Editar
-                </MudButton>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
-</MudPaper>
+        <!-- Caja de búsqueda -->
+        <div class="flex items-center gap-4 mb-6">
+            <MudTextField @bind-Value="_filtro"
+                          Placeholder="Buscar libros..."
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Class="w-full max-w-lg"
+                          Immediate="true"
+                          OnInput="FiltrarLibros" />
+        </div>
+
+        <!-- Tabla -->
+        <div class="w-full overflow-x-auto border border-gray-300 rounded-md">
+            <MudTable Items="_librosFiltrados"
+                      Hover="true"
+                      Dense="false"
+                      Bordered="false"
+                      Elevation="0"
+                      Class="w-full text-base border-collapse table-auto leading-relaxed">
+                <HeaderContent>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Título</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Nombre Autor</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Año</MudTh>
+                    @* <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Autor ID</MudTh> *@
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Género</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Páginas</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Acciones</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.Titulo</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.NombreAutor</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.Anio</MudTd>
+                    @* <MudTd Class="px-5 py-3 border border-gray-200">@context.AutorId</MudTd> *@
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.Genero</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.NumeroPaginas</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200 space-x-2">
+                        <MudButton OnClick="() => EliminarLibro(context)"
+                                   Style="background-color: rgb(220, 38, 38); color: white;"
+                                   Size="Size.Small"
+                                   Variant="Variant.Filled"
+                                   Class="transition-transform duration-200 ease-in-out hover:scale-105">
+                            🗑️ Eliminar
+                        </MudButton>
+
+                        <MudButton Href="@($"/libros/editar/{context.Id}")"
+                                   Style="background-color: rgb(17, 24, 39); color: white;"
+                                   Size="Size.Small"
+                                   Variant="Variant.Filled"
+                                   Class="transition-transform duration-200 ease-in-out hover:scale-105">
+                            ✏️ Editar
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+    </MudPaper>
+</div>
 
 @code {
     private List<LibroDto> libros = new();
+    private List<LibroDto> _librosFiltrados = new();
+    private string _filtro = "";
 
     protected override async Task OnAuthenticatedInitializedAsync()
     {
         libros = await LibroService.ObtenerTodosAsync();
+        _librosFiltrados = libros;
+    }
+
+    private void FiltrarLibros(ChangeEventArgs args)
+    {
+        var texto = _filtro?.Trim().ToLower() ?? "";
+
+        if (string.IsNullOrWhiteSpace(texto))
+        {
+            _librosFiltrados = libros;
+        }
+        else
+        {
+            _librosFiltrados = libros.Where(libro =>
+                libro.Titulo?.ToLower().Contains(texto) == true ||
+                libro.Genero?.ToLower().Contains(texto) == true ||
+                libro.AutorId.ToString().Contains(texto) ||
+                libro.Anio.ToString().Contains(texto)
+            ).ToList();
+        }
     }
 
     private async Task EliminarLibro(LibroDto libro)
@@ -50,12 +113,13 @@
 
         if (eliminado)
         {
-            Snackbar.Add("Libro eliminado", Severity.Success);
+            Snackbar.Add("📕 Libro eliminado", Severity.Success);
             libros = await LibroService.ObtenerTodosAsync();
+            FiltrarLibros(null);
         }
         else
         {
-            Snackbar.Add("Error al eliminar libro", Severity.Error);
+            Snackbar.Add("❌ Error al eliminar libro", Severity.Error);
         }
     }
 }

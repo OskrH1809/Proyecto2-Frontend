@@ -1,4 +1,6 @@
 ﻿@page "/login"
+@layout Proyecto2.Frontend.Shared.LoginLayout
+
 @inject IAuthService AuthService
 @inject NavigationManager NavManager
 @inject ISnackbar Snackbar
@@ -7,16 +9,42 @@
 @using MudBlazor
 @using System.Text.Json
 
-<MudPaper Class="p-6 max-w-md mx-auto mt-10" Elevation="4">
-    <MudText Typo="Typo.h6" Class="mb-4">Iniciar Sesión</MudText>
+<div class="bg-gray-100 min-h-screen py-12 px-4">
+    <MudPaper Class="w-full max-w-md mx-auto p-8 rounded-xl shadow-lg bg-white">
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">🔐 Iniciar Sesión</h2>
+            <p class="text-sm text-gray-500">Bienvenido de nuevo. Ingresa tus credenciales.</p>
+        </div>
 
-    <MudForm @ref="_form">
-        <MudTextField Label="Username" @bind-Value="_model.Username" Required="true" />
-        <MudTextField Label="Contraseña" @bind-Value="_model.Password" InputType="InputType.Password" Required="true" />
+        <MudForm @ref="_form">
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                    <MudTextField @bind-Value="_model.Username"
+                                  Placeholder="Ingrese su usuario"
+                                  Required="true"
+                                  Class="w-full border border-blue-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
 
-        <MudButton OnClick="OnLoginAsync" Class="mt-4" Color="Color.Primary">Ingresar</MudButton>
-    </MudForm>
-</MudPaper>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                    <MudTextField @bind-Value="_model.Password"
+                                  InputType="InputType.Password"
+                                  Placeholder="Ingrese su contraseña"
+                                  Required="true"
+                                  Class="w-full border border-gray-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                </div>
+
+                <MudButton OnClick="OnLoginAsync"
+                           Variant="Variant.Filled"
+                           Style="background-color: rgb(17, 24, 39); color: white;"
+                           Class="w-full mt-4 py-3 text-lg font-semibold transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-md">
+                    🔓 Ingresar
+                </MudButton>
+            </div>
+        </MudForm>
+    </MudPaper>
+</div>
 
 @code {
     private MudForm _form;
@@ -29,12 +57,10 @@
         if (_form.IsValid)
         {
             var tokenJson = await AuthService.LoginAsync(_model);
-
             string rawToken = string.Empty;
 
             try
             {
-                // Primer deserializado porque el string viene como JSON en texto
                 var jsonDoc = JsonDocument.Parse(tokenJson);
                 if (jsonDoc.RootElement.TryGetProperty("token", out var tokenProp))
                 {
@@ -43,7 +69,6 @@
             }
             catch
             {
-                // Si no se puede deserializar, viene plano
                 rawToken = tokenJson;
             }
 
