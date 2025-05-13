@@ -1,0 +1,13 @@
+﻿@page "/test-date"
+
+<MudPaper Class="p-4">
+    <MudText Typo="Typo.h6">Test Date Picker</MudText>
+
+    <MudDatePicker @bind-Date="selectedDate" Label="Selecciona una fecha" Required="true" />
+
+    <p class="mt-4">Fecha seleccionada: @selectedDate?.ToShortDateString()</p>
+</MudPaper>
+
+@code {
+    private DateTime? selectedDate;
+}

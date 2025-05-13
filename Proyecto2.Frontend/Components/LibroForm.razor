@@ -1,47 +1,113 @@
-﻿@using MudBlazor
-@inject HttpClient Http
+﻿
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using MudBlazor
+@inject ILibroService LibroService
+@inject IAutorService AutorService
 @inject ISnackbar Snackbar
 
-<MudPaper>
-    <MudForm @ref="_form" Model="_libro">
-        
-        <MudButton OnClick="SubmitForm">Guardar</MudButton>
+<div class="max-w-xl mx-auto mt-10 bg-white rounded-xl shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">📘 Registrar Libro</h2>
+
+    <MudForm @ref="_form">
+        <div class="space-y-6">
+            <!-- Título -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Título</label>
+                <MudTextField @bind-Value="_libro.Titulo"
+                              Required="true"
+                              Class="w-full border border-blue-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-blue-500" />
+            </div>
+
+            <!-- Año -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Año</label>
+                <MudTextField @bind-Value="_libro.Anio"
+                              Required="true"
+                              Type="number"
+                              Class="w-full border border-green-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-green-500" />
+            </div>
+
+            <!-- Género -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Género</label>
+                <MudTextField @bind-Value="_libro.Genero"
+                              Class="w-full border border-yellow-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-yellow-500" />
+            </div>
+
+            <!-- Número de páginas -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Número de páginas</label>
+                <MudTextField @bind-Value="_libro.NumeroPaginas"
+                              Type="number"
+                              Class="w-full border border-purple-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-purple-500" />
+            </div>
+
+            <!-- Buscador de autor -->
+            <div>
+                <label class="block text-sm font-medium text-gray-600 mb-1">Buscar Autor</label>
+                <input type="text"
+                       id="autorInput"
+                       placeholder="Buscar por nombre..."
+                       oninput="filtrarAutores('autorInput', 'autorSelect')"
+                       class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 focus:ring-2 focus:ring-indigo-400 transition" />
+            </div>
+
+            <!-- Select de autor -->
+            <div class="mt-2">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Autor</label>
+                <select id="autorSelect"
+                        @bind="_libro.AutorId"
+                        size="1"
+                        class="w-full border border-indigo-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 overflow-y-auto">
+                    <option disabled value="0">-- Seleccionar autor --</option>
+                    @foreach (var autor in _autores)
+                    {
+                        <option value="@autor.Id">@autor.NombreCompleto</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Botón Guardar -->
+            <MudButton OnClick="Registrar"
+                       Variant="Variant.Filled"
+                       Style="background-color: rgb(17, 24, 39); color: white;"
+                       Size="Size.Medium"
+                       Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition hover:scale-105 hover:shadow-lg">
+                💾 Guardar Libro
+            </MudButton>
+        </div>
     </MudForm>
-</MudPaper>
+</div>
 
 @code {
-    
-    private MudForm _form;
     private LibroDto _libro = new();
+    private MudForm _form;
 
-    private async Task SubmitForm()
+    private List<AutorDto> _autores = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _autores = await AutorService.ObtenerTodosAsync();
+    }
+
+    private async Task Registrar()
     {
         await _form.Validate();
 
         if (_form.IsValid)
         {
-            var response = await Http.PostAsJsonAsync("api/libros", _libro);
+            var resultado = await LibroService.CrearAsync(_libro);
 
-            if (response.IsSuccessStatusCode)
+            if (resultado)
             {
-                Snackbar.Add("Libro registrado exitosamente", Severity.Success);
-                _libro = new();
+                Snackbar.Add("📘 Libro registrado correctamente", Severity.Success);
+                _libro = new(); // Limpiar
             }
             else
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Snackbar.Add($"Error al registrar libro: {error}", Severity.Error);
+                Snackbar.Add("❌ Error al registrar libro", Severity.Error);
             }
         }
-    }
-
-    
-    public class LibroDto
-    {
-        public string Titulo { get; set; } = "";
-        public string Anio { get; set; } = "";
-        public string Genero { get; set; } = "";
-        public int? NumPaginas { get; set; }
-        public string Autor { get; set; } = "";
     }
 }

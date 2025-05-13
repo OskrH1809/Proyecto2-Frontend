@@ -1,0 +1,103 @@
+﻿@page "/autores/editar/{id:int}"
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
+@inject IAutorService AutorService
+@inject ISnackbar Snackbar
+@using MudBlazor
+
+
+<div class="max-w-xl mx-auto mt-10 bg-white rounded-xl shadow-md p-6">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">✏️ Editar Autor</h2>
+
+    @if (_autor is not null)
+    {
+        <MudForm @ref="_form">
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre completo</label>
+                    <MudTextField @bind-Value="_autor.NombreCompleto"
+                                  Class="w-full border border-blue-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  Required="true" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Fecha de nacimiento</label>
+                    <MudTextField @bind-Value="FechaNacimientoString"
+                                  InputType="InputType.Date"
+                                  Class="w-full border border-green-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  Required="true" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ciudad de procedencia</label>
+                    <MudTextField @bind-Value="_autor.CiudadProcedencia"
+                                  Class="w-full border border-yellow-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+                    <MudTextField @bind-Value="_autor.CorreoElectronico"
+                                  Class="w-full border border-purple-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                </div>
+
+                <MudButton OnClick="ActualizarAutor"
+                           Variant="Variant.Filled"
+                           Style="background-color: rgb(17, 24, 39); color: white;"
+                           Size="Size.Medium"
+                           Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+                    💾 Guardar Cambios
+                </MudButton>
+
+            </div>
+        </MudForm>
+    }
+    else
+    {
+        <div class="flex justify-center py-10">
+            <MudProgressCircular Indeterminate="true" />
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private AutorDto? _autor;
+    private MudForm _form;
+
+    private string FechaNacimientoString
+    {
+        get => _autor?.FechaNacimiento?.ToUniversalTime().ToString("yyyy-MM-dd") ?? "";
+        set
+        {
+            if (_autor is not null && DateTime.TryParse(value, out var parsedDate))
+                _autor.FechaNacimiento = DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc);
+        }
+    }
+
+    protected override async Task OnAuthenticatedInitializedAsync()
+    {
+        _autor = await AutorService.ObtenerPorIdAsync(id);
+    }
+
+    private async Task ActualizarAutor()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var actualizado = await AutorService.ActualizarAsync(id, _autor!);
+
+            if (actualizado)
+            {
+                Snackbar.Add("Autor actualizado correctamente", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add("Error al actualizar autor", Severity.Error);
+            }
+        }
+    }
+}

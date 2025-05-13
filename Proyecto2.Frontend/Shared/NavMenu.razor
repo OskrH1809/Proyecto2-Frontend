@@ -1,5 +1,41 @@
 ﻿@using MudBlazor
+@inject ISessionService SessionService
+@using Proyecto2.Frontend.Shared
+@using Microsoft.AspNetCore.Components.Rendering
 
-<MudNavLink Href="/libros/registrar" Icon="@Icons.Material.Filled.Book">
-    Registrar Libro
-</MudNavLink>
+<NavMenu />
+
+
+@code {
+    private bool _isOpen = false;
+
+    private void ToggleMenu() => _isOpen = !_isOpen;
+
+    private RenderFragment NavLinks() => builder =>
+    {
+        builder.OpenElement(0, "ul");
+
+        RenderNavItem(builder, "/", "🏠 Inicio", 1);
+        RenderNavItem(builder, "/autores", "👤 Lista de Autores", 2);
+        RenderNavItem(builder, "/autores/registrar", "➕ Registrar Autor", 3);
+        RenderNavItem(builder, "/libros", "📖 Lista de Libros", 4);
+        RenderNavItem(builder, "/libros/registrar", "➕ Registrar Libro", 5);
+
+        builder.CloseElement();
+    };
+
+    private void RenderNavItem(RenderTreeBuilder builder, string href, string label, int seq)
+
+    {
+        builder.OpenElement(seq, "li");
+        builder.OpenComponent<NavLink>(seq + 1);
+        builder.AddAttribute(seq + 2, "href", href);
+        builder.AddAttribute(seq + 3, "class", "block px-4 py-2 hover:bg-gray-700");
+        builder.AddAttribute(seq + 4, "ChildContent", (RenderFragment)(childBuilder =>
+        {
+            childBuilder.AddContent(seq + 5, label);
+        }));
+        builder.CloseComponent();
+        builder.CloseElement();
+    }
+}

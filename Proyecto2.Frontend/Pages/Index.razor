@@ -1,3 +1,44 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<div class="min-h-screen relative flex items-center justify-center bg-gray-900">
+
+    <!-- Gradiente de fondo -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-teal-900/70 to-gray-900/90 z-10"></div>
+
+    <!-- Contenido -->
+    <div class="relative z-20 flex flex-col items-center justify-start min-h-screen px-8 py-20 w-full text-white">
+
+        <!-- Título y descripción -->
+        <h1 class="text-6xl md:text-8xl font-serif font-extrabold text-center mb-6 tracking-tighter">
+            Sistema de Gestión de Biblioteca
+        </h1>
+        <p class="text-lg md:text-xl text-gray-200 max-w-3xl text-center mb-16 leading-relaxed">
+            Administra tus libros y autores con una interfaz intuitiva, diseñada para ofrecer rapidez y elegancia en cada interacción.
+        </p>
+
+        <!-- Botones horizontal, con espacio -->
+        <div class="flex flex-col md:flex-row gap-12 w-full max-w-7xl">
+
+            <!-- Botón Libros -->
+            <a href="/libros"
+               class="group relative flex-1 bg-gray-900/50 backdrop-blur-md border border-teal-600/50 rounded-2xl p-12 flex flex-col items-center justify-center text-white shadow-lg transition-all duration-300 hover:scale-105 min-h-[350px]">
+                <h2 class="text-4xl font-serif font-semibold mb-4 text-gray-200 group-hover:text-teal-400 transition-colors">📚 Libros</h2>
+                <p class="text-xl text-center text-gray-300 group-hover:text-gray-100 transition-colors">
+                    Registra, consulta y administra todos los libros del sistema.
+                </p>
+                <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-teal-500/50 transition-all duration-300"></div>
+            </a>
+
+            <!-- Botón Autores -->
+            <a href="/autores"
+               class="group relative flex-1 bg-gray-900/50 backdrop-blur-md border border-teal-600/50 rounded-2xl p-12 flex flex-col items-center justify-center text-white shadow-lg transition-all duration-300 hover:scale-105 min-h-[350px]">
+                <h2 class="text-4xl font-serif font-semibold mb-4 text-gray-200 group-hover:text-teal-400 transition-colors">✍️ Autores</h2>
+                <p class="text-xl text-center text-gray-300 group-hover:text-gray-100 transition-colors">
+                    Gestiona la información y registros de autores asociados.
+                </p>
+                <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-teal-500/50 transition-all duration-300"></div>
+            </a>
+
+        </div>
+    </div>
+</div>

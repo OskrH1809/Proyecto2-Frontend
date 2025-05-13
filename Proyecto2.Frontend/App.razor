@@ -1,12 +1,37 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components
+@using Proyecto2.Frontend.Shared
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
+@inject NavigationManager NavigationManager
+
+@inject LazyAssemblyLoader AssemblyLoader
+
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
-        <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
+            <p>Página no encontrada.</p>
+            <p class="text-xs text-gray-400">Ruta actual: @NavigationManager.Uri</p>
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    private bool _autoresLoaded = false;
+
+    private async Task OnNavigateAsync(NavigationContext args)
+    {
+        if (!_autoresLoaded && args.Path.Contains("lazy"))
+        {
+            var assemblies = await AssemblyLoader.LoadAssembliesAsync(new[] { "Proyecto2.Autores.dll" });
+
+            
+            var _ = assemblies.SelectMany(a => a.ExportedTypes).ToList();
+
+            _autoresLoaded = true;
+        }
+    }
+}

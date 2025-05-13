@@ -1,0 +1,87 @@
+﻿@page "/autores"
+@using Proyecto2.Frontend.Auth
+@inherits ProtectedComponentBase
+@using Proyecto2.Frontend.Models
+@using Proyecto2.Frontend.Services
+@using MudBlazor
+@inject IAutorService AutorService
+@inject ISnackbar Snackbar
+
+<div class="w-full px-4 py-8">
+    <MudPaper Class="w-full p-10 rounded-xl shadow-md bg-white">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+            <MudText Typo="Typo.h5" Class="text-gray-800 font-bold">📚 Autores Registrados</MudText>
+            <MudButton Href="/autores/registrar"
+                       StartIcon="@Icons.Material.Filled.Add"
+                       Style="background-color: rgb(34, 197, 94); color: white;"
+                       Variant="Variant.Filled"
+                       Class="mt-4 sm:mt-0 transition-transform hover:scale-105 shadow-md">
+                Agregar Autor
+            </MudButton>
+        </div>
+
+        <div class="w-full overflow-x-auto border border-gray-300 rounded-md">
+            <MudTable Items="autores"
+                      Hover="true"
+                      Dense="false"
+                      Bordered="false"
+                      Elevation="0"
+                      Class="w-full text-base border-collapse table-auto leading-relaxed">
+                <HeaderContent>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Nombre</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Fecha Nacimiento</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Ciudad</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Correo</MudTh>
+                    <MudTh Class="px-5 py-3 bg-gray-100 text-left text-gray-700 font-semibold border border-gray-300">Acciones</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.NombreCompleto</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.FechaNacimiento?.ToShortDateString()</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.CiudadProcedencia</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200">@context.CorreoElectronico</MudTd>
+                    <MudTd Class="px-5 py-3 border border-gray-200 space-x-2">
+                        <MudButton OnClick="() => EliminarAutor(context)"
+                                   Style="background-color: rgb(220, 38, 38); color: white;"
+                                   Size="Size.Small"
+                                   Variant="Variant.Filled"
+                                   Class="transition-transform duration-200 ease-in-out hover:scale-105">
+                            🗑️ Eliminar
+                        </MudButton>
+
+                        <MudButton Href="@($"/autores/editar/{context.Id}")"
+                                   Style="background-color: rgb(17, 24, 39); color: white;"
+                                   Size="Size.Small"
+                                   Variant="Variant.Filled"
+                                   Class="transition-transform duration-200 ease-in-out hover:scale-105">
+                            ✏️ Editar
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </div>
+    </MudPaper>
+</div>
+
+@code {
+    private List<AutorDto> autores = new();
+
+    protected override async Task OnAuthenticatedInitializedAsync()
+    {
+        autores = await AutorService.ObtenerTodosAsync();
+    }
+
+    private async Task EliminarAutor(AutorDto autor)
+    {
+        var confirmado = await AutorService.EliminarAsync(autor.Id);
+
+        if (confirmado)
+        {
+            Snackbar.Add("📘 Autor eliminado", Severity.Success);
+            autores = await AutorService.ObtenerTodosAsync();
+        }
+        else
+        {
+            Snackbar.Add("❌ Error al eliminar autor", Severity.Error);
+        }
+    }
+}
