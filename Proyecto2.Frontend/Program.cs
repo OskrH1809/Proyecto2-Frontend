@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Microsoft.JSInterop;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.WebAssembly.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -18,8 +19,7 @@ builder.Services.AddScoped<ILibroService, LibroService>();
 builder.Services.AddScoped<IAutorService, AutorService>();
 builder.Services.AddScoped<ISessionService, SessionService>();
 builder.Services.AddScoped<AuthenticationStateProvider, SessionService>();
-
-// HttpClient con handler personalizado
+builder.Services.AddScoped<LazyAssemblyLoader>();
 builder.Services.AddScoped(sp =>
 {
     var js = sp.GetRequiredService<IJSRuntime>();

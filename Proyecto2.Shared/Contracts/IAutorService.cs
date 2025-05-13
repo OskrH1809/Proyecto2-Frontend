@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Proyecto2.Shared.Models;
+﻿using Proyecto2.Shared.DTOs;
 
-namespace Proyecto2.Shared.Contracts
+namespace Proyecto2.Shared.Contracts;
+
+public interface IAutorService
 {
-    public interface IAutorService
-    {
-        Task<bool> CrearAsync(AutorDto autor);
-        Task<List<AutorDto>> ObtenerTodosAsync();
-        Task<bool> EliminarAsync(int id);
-
-        Task<AutorDto?> ObtenerPorIdAsync(int id);
-        Task<bool> ActualizarAsync(int id, AutorDto autor);
-    }
+    Task<List<AutorDto>> ObtenerTodosAsync();
+    Task<AutorDto?> ObtenerPorIdAsync(int id);
+    Task<AutorDto> CrearAsync(AutorDto autor);
+    Task<AutorDto> ActualizarAsync(int id, AutorDto autor);
+    Task<bool> EliminarAsync(int id);
 }

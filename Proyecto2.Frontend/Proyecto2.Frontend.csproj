@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<BlazorWebAssemblyLazyLoad>true</BlazorWebAssemblyLazyLoad>
+		<BlazorWebAssemblyLoadAllGlobalizationData>true</BlazorWebAssemblyLoadAllGlobalizationData>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -14,12 +15,11 @@
 		<PackageReference Include="MudBlazor" Version="6.8.0" />
 	</ItemGroup>
 
-	<!-- Ensamblado que se va a lazy-loadear -->
+	
 	<ItemGroup>
 		<BlazorWebAssemblyLazyLoad Include="Proyecto2.Autores.dll" />
 	</ItemGroup>
 
-	<!-- ⚠️ Aquí el cambio clave: referencia NORMAL, sin `ReferenceOutputAssembly="false"` -->
 	<ItemGroup>
 		<ProjectReference Include="..\Proyecto2.Autores\Proyecto2.Autores.csproj" />
 	</ItemGroup>

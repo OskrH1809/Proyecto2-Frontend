@@ -1,25 +1,37 @@
-﻿@using Microsoft.AspNetCore.Components.Authorization
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components
 @using Proyecto2.Frontend.Shared
-@using System.Reflection
+@using Microsoft.AspNetCore.Components.WebAssembly.Services
+@inject NavigationManager NavigationManager
 
-@namespace Proyecto2.Frontend
-@layout MainLayout
+@inject LazyAssemblyLoader AssemblyLoader
 
-<Router AppAssembly="@typeof(App).Assembly"
-        AdditionalAssemblies="@_lazyAssemblies">
+<Router AppAssembly="@typeof(App).Assembly" OnNavigateAsync="OnNavigateAsync">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">
             <p>Página no encontrada.</p>
+            <p class="text-xs text-gray-400">Ruta actual: @NavigationManager.Uri</p>
         </LayoutView>
     </NotFound>
 </Router>
 
 @code {
-    private Assembly[] _lazyAssemblies = new[]
+    private bool _autoresLoaded = false;
+
+    private async Task OnNavigateAsync(NavigationContext args)
     {
-        Assembly.Load("Proyecto2.Autores")
-    };
+        if (!_autoresLoaded && args.Path.Contains("lazy"))
+        {
+            var assemblies = await AssemblyLoader.LoadAssembliesAsync(new[] { "Proyecto2.Autores.dll" });
+
+            
+            var _ = assemblies.SelectMany(a => a.ExportedTypes).ToList();
+
+            _autoresLoaded = true;
+        }
+    }
 }
