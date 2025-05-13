@@ -9,7 +9,9 @@ public interface ILibroService
     Task<List<LibroDto>> ObtenerTodosAsync();
     Task<bool> EliminarAsync(int id);
     Task<LibroDto?> ObtenerPorIdAsync(int id);
-    Task<bool> ActualizarAsync(int id, LibroDto libro);
+    Task<bool> ActualizarLibroAsync(UpdateLibroDto updateLibroDto);
+
+   
 
 
 }

@@ -14,7 +14,13 @@ public class AutorService : IAutorService
 
     public async Task<bool> CrearAsync(AutorDto autor)
     {
-        var response = await _http.PostAsJsonAsync("api/autores", autor);
+        var wrapper = new AutorWrapperDto
+        {
+            Id = 0,       
+            Autor = autor
+        };
+
+        var response = await _http.PostAsJsonAsync("api/autores", wrapper);
         return response.IsSuccessStatusCode;
     }
 

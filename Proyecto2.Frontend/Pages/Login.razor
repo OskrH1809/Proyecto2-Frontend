@@ -49,7 +49,16 @@
 @code {
     private MudForm _form;
     private LoginRequest _model = new();
+    protected override async Task OnInitializedAsync()
+    {
+        var reason = await JS.InvokeAsync<string>("localStorage.getItem", "authRedirectReason");
 
+        if (reason == "expired")
+        {
+            Snackbar.Add(" Tu sesión ha expirado. Por favor inicia sesión nuevamente.", Severity.Warning);
+            await JS.InvokeVoidAsync("localStorage.removeItem", "authRedirectReason");
+        }
+    }
     private async Task OnLoginAsync()
     {
         await _form.Validate();

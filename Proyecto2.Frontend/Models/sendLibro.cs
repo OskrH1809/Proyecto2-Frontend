@@ -9,4 +9,6 @@ public class SendLibro
     public int? NumeroPaginas { get; set; }
     public int AutorId { get; set; }
 
+    public string NombreAutor { get; set; } = "";
+
 }

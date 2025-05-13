@@ -1,4 +1,5 @@
 ﻿using Proyecto2.Frontend.Models;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace Proyecto2.Frontend.Services;
@@ -14,8 +15,8 @@ public class LibroService : ILibroService
 
     public async Task<List<LibroDto>> BuscarAsync(string query)
     {
-        var response = await _http.GetFromJsonAsync<List<LibroWrapperDto>>($"api/libros/search?query={query}");
-        return response?.Select(r => r.Libro).ToList() ?? new List<LibroDto>();
+        var response = await _http.GetFromJsonAsync<List<LibroDto>>($"api/libros/search?query={query}");
+        return response ?? new();
     }
 
 
@@ -26,10 +27,9 @@ public class LibroService : ILibroService
         return response.IsSuccessStatusCode;
     }
 
-    public async Task<bool> ActualizarAsync(int id, LibroDto libro)
+    public async Task<bool> ActualizarLibroAsync(UpdateLibroDto UpdateLibroDto)
     {
-        var wrapper = new LibroWrapperDto { Id = id, Libro = libro };
-        var response = await _http.PutAsJsonAsync($"api/libros/{id}", wrapper);
+        var response = await _http.PutAsJsonAsync($"api/libros/{UpdateLibroDto.Id}", UpdateLibroDto);
         return response.IsSuccessStatusCode;
     }
 
