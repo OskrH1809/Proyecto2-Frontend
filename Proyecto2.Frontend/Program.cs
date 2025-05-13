@@ -3,17 +3,23 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Proyecto2.Frontend;
 using Proyecto2.Frontend.Services;
 using Proyecto2.Frontend.Services.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Microsoft.JSInterop;
-using System.Net.Http;
-using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// HttpClient con AuthHeaderHandler personalizado (adjunta token y redirige si 401)
+// Servicios
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ILibroService, LibroService>();
+builder.Services.AddScoped<IAutorService, AutorService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<AuthenticationStateProvider, SessionService>();
+
+// HttpClient con handler personalizado
 builder.Services.AddScoped(sp =>
 {
     var js = sp.GetRequiredService<IJSRuntime>();
@@ -25,21 +31,10 @@ builder.Services.AddScoped(sp =>
 
     return new HttpClient(handler)
     {
-        BaseAddress = new Uri("https://localhost:7279/") // Cambia según tu backend
+        BaseAddress = new Uri("https://localhost:7279/")
     };
 });
 
-// Registro de servicios personalizados
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ILibroService, LibroService>();
-builder.Services.AddScoped<IAutorService, AutorService>();
-
-// Autenticación y sesión
-builder.Services.AddAuthorizationCore();
-builder.Services.AddScoped<AuthenticationStateProvider, SessionService>();
-builder.Services.AddScoped<ISessionService, SessionService>();
-
-// MudBlazor
 builder.Services.AddMudServices();
 
 await builder.Build().RunAsync();

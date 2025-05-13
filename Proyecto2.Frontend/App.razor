@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
-@namespace Proyecto2.Frontend
 @using Proyecto2.Frontend.Shared
+@using System.Reflection
 
+@namespace Proyecto2.Frontend
 @layout MainLayout
 
-<Router AppAssembly="@typeof(App).Assembly">
+<Router AppAssembly="@typeof(App).Assembly"
+        AdditionalAssemblies="@_lazyAssemblies">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>
@@ -15,3 +17,9 @@
     </NotFound>
 </Router>
 
+@code {
+    private Assembly[] _lazyAssemblies = new[]
+    {
+        Assembly.Load("Proyecto2.Autores")
+    };
+}

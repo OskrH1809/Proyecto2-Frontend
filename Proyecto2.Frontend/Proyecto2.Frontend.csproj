@@ -1,18 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<BlazorWebAssemblyLazyLoad>true</BlazorWebAssemblyLazyLoad>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.20" PrivateAssets="all" />
-    <PackageReference Include="MudBlazor" Version="6.8.0" />
-    <PackageReference Include="Solutaris.InfoWARE.ProtectedBrowserStorage" Version="1.0.2" />
-	
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.20" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.20" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.20" />
+		<PackageReference Include="MudBlazor" Version="6.8.0" />
+	</ItemGroup>
+
+	<!-- Ensamblado que se va a lazy-loadear -->
+	<ItemGroup>
+		<BlazorWebAssemblyLazyLoad Include="Proyecto2.Autores.dll" />
+	</ItemGroup>
+
+	<!-- ⚠️ Aquí el cambio clave: referencia NORMAL, sin `ReferenceOutputAssembly="false"` -->
+	<ItemGroup>
+		<ProjectReference Include="..\Proyecto2.Autores\Proyecto2.Autores.csproj" />
+	</ItemGroup>
 
 </Project>
