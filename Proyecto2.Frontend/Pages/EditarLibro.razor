@@ -15,12 +15,11 @@
     {
         <MudForm @ref="_form">
             <div class="space-y-6">
-
                 <!-- Título -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Título</label>
                     <MudTextField @bind-Value="_libro.Titulo"
-                                  Class="w-full border border-blue-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  Class="w-full border border-blue-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-blue-500"
                                   Required="true" />
                 </div>
 
@@ -28,7 +27,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Año</label>
                     <MudTextField @bind-Value="_libro.Anio"
-                                  Class="w-full border border-green-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                  Class="w-full border border-green-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-green-500"
                                   Required="true" />
                 </div>
 
@@ -36,7 +35,7 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Género</label>
                     <MudTextField @bind-Value="_libro.Genero"
-                                  Class="w-full border border-yellow-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+                                  Class="w-full border border-yellow-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-yellow-500" />
                 </div>
 
                 <!-- Número de páginas -->
@@ -44,38 +43,41 @@
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Número de páginas</label>
                     <MudTextField @bind-Value="_libro.NumeroPaginas"
                                   Type="number"
-                                  Class="w-full border border-purple-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-purple-500" />
+                                  Class="w-full border border-purple-300 rounded-md px-3 py-2 bg-blue-50 focus:ring-2 focus:ring-purple-500" />
                 </div>
 
                 <!-- Buscador de autor -->
                 <div>
                     <label class="block text-sm font-medium text-gray-600 mb-1">Buscar Autor</label>
                     <input type="text"
-                           @bind="_busquedaAutor"
-                           @bind:event="oninput"
+                           id="autorInput"
                            placeholder="Buscar por nombre..."
-                           class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition" />
+                           oninput="filtrarAutores('autorInput', 'autorSelect')"
+                           class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-gray-50 focus:ring-2 focus:ring-indigo-400 transition" />
                 </div>
 
                 <!-- Select de autor -->
-                <div>
+                <div class="mt-2">
                     <label class="block text-sm font-semibold text-gray-700 mb-1">Autor</label>
-                    <select @bind="_libro.AutorId"
-                            class="w-full border border-indigo-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <select id="autorSelect"
+                            @bind="_libro.AutorId"
+                            size="1"
+                            class="w-full border border-indigo-300 rounded-md px-3 py-2 shadow-sm bg-blue-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-200 overflow-y-auto">
                         <option disabled value="0">-- Seleccionar autor --</option>
-                        @foreach (var autor in _autoresFiltrados)
+                        @foreach (var autor in _autores)
                         {
                             <option value="@autor.Id">@autor.NombreCompleto</option>
                         }
                     </select>
                 </div>
 
-                <!-- Botón -->
+
+                <!-- Botón Guardar -->
                 <MudButton OnClick="ActualizarLibro"
                            Variant="Variant.Filled"
                            Style="background-color: rgb(17, 24, 39); color: white;"
                            Size="Size.Medium"
-                           Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition-transform duration-300 ease-in-out hover:scale-105 hover:shadow-lg">
+                           Class="w-full mt-6 py-3 text-lg font-semibold shadow-md transition hover:scale-105 hover:shadow-lg">
                     💾 Guardar Cambios
                 </MudButton>
             </div>
@@ -97,31 +99,28 @@
 
     private List<AutorDto> _autores = new();
     private List<AutorDto> _autoresFiltrados = new();
+
     private string _busquedaAutor = "";
 
     protected override async Task OnAuthenticatedInitializedAsync()
     {
         _libro = await LibroService.ObtenerPorIdAsync(id);
         _autores = await AutorService.ObtenerTodosAsync();
-        _autoresFiltrados = _autores.ToList();
+        FiltrarAutores(); // inicializa filtrados
     }
 
-    private async Task ActualizarLibro()
+    private void FiltrarAutores()
     {
-        await _form.Validate();
-
-        if (_form.IsValid)
+        if (string.IsNullOrWhiteSpace(_busquedaAutor))
         {
-            var actualizado = await LibroService.ActualizarAsync(id, _libro!);
-
-            if (actualizado)
-            {
-                Snackbar.Add("📘 Libro actualizado correctamente", Severity.Success);
-            }
-            else
-            {
-                Snackbar.Add("❌ Error al actualizar libro", Severity.Error);
-            }
+            _autoresFiltrados = _autores;
+        }
+        else
+        {
+            _autoresFiltrados = _autores
+                .Where(a => a.NombreCompleto != null &&
+                            a.NombreCompleto.ToLower().Contains(_busquedaAutor.Trim().ToLower()))
+                .ToList();
         }
     }
 
@@ -131,12 +130,19 @@
         set
         {
             _busquedaAutor = value;
-            _autoresFiltrados = string.IsNullOrWhiteSpace(value)
-                ? _autores
-                : _autores
-                    .Where(a => a.NombreCompleto != null &&
-                                a.NombreCompleto.ToLower().Contains(value.Trim().ToLower()))
-                    .ToList();
+            FiltrarAutores();
+        }
+    }
+
+    private async Task ActualizarLibro()
+    {
+        await _form.Validate();
+
+        if (_form.IsValid)
+        {
+            var actualizado = await LibroService.ActualizarAsync(id, _libro!);
+            Snackbar.Add(actualizado ? "📘 Libro actualizado correctamente" : "❌ Error al actualizar libro",
+                         actualizado ? Severity.Success : Severity.Error);
         }
     }
 }
